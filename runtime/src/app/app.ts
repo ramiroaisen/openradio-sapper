@@ -204,7 +204,7 @@ export async function navigate(dest: Target, id: number, noscroll?: boolean, has
 		const { props, branch } = loaded_result;
 		await render(branch, props, dest.page);
 	}
-	if (document.activeElement && (document.activeElement instanceof HTMLElement)) document.activeElement.blur();
+	// if (document.activeElement && (document.activeElement instanceof HTMLElement)) document.activeElement.blur();
 
 	if (!noscroll) {
 		let scroll = scroll_history[id];

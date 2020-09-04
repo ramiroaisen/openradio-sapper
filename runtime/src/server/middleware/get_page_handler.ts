@@ -8,6 +8,8 @@ import URL from 'url';
 import { sourcemap_stacktrace } from './sourcemap_stacktrace';
 import { Manifest, ManifestPage, Req, Res, build_dir, dev, src_dir } from '@sapper/internal/manifest-server';
 import App from '@sapper/internal/App.svelte';
+import requestIp from "request-ip";
+
 
 export function get_page_handler(
 	manifest: Manifest,
@@ -53,6 +55,8 @@ export function get_page_handler(
 			css?: { main: string[] },
 			legacy_assets?: Record<string, string>
 		} = get_build_info();
+
+		const ip = requestIp.getClientIp(req);
 
 		res.setHeader('Content-Type', 'text/html');
 
@@ -125,6 +129,9 @@ export function get_page_handler(
 
 				if (include_credentials) {
 					opts.headers = Object.assign({}, opts.headers);
+					if(ip) {
+						opts.headers["x-real-ip"] = ip;
+					}
 
 					const cookies = Object.assign(
 						{},
@@ -341,7 +348,10 @@ export function get_page_handler(
 				.replace('%sapper.scripts%', () => `<script${nonce_attr}>${script}</script>`)
 				.replace('%sapper.html%', () => html)
 				.replace('%sapper.head%', () => head)
-				.replace('%sapper.styles%', () => styles);
+				.replace('%sapper.styles%', () => styles)
+				.replace(/%locals\.(\w+)%/g, (match, p1) => {
+					return p1 in res.locals ? res.locals[p1] : p1
+				})
 
 			res.statusCode = status;
 			res.end(body);

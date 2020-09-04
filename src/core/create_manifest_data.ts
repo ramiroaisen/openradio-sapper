@@ -280,7 +280,8 @@ function comparator(
 }
 
 function get_parts(part: string): Part[] {
-	return part.split(/\[(.+?\(.+?\)|.+?)\]/)
+	return part.split(/\[(.+?)\]/)
+	//return part.split(/\[(.+?\(.+?\)|.+?)\]/)
 		.map((str, i) => {
 			if (!str) return null;
 			const dynamic = i % 2 === 1;
