@@ -83,6 +83,10 @@ export function get_page_handler(
 			});
 		}
 
+
+
+		const prev = res.getHeader("link") as string;
+
 		const link = preload_files
 			.filter((v, i, a) => a.indexOf(v) === i)        // remove any duplicates
 			.filter(file => file && !file.match(/\.map$/))  // exclude source maps
@@ -90,10 +94,10 @@ export function get_page_handler(
 				const as = /\.css$/.test(file) ? 'style' : 'script';
 				const rel = es6_preload && as === 'script' ? 'modulepreload' : 'preload';
 				return `<${req.baseUrl}/client/${file}>;rel="${rel}";as="${as}"`;
-			})
-			.join(', ');
+			}).concat([prev].filter(Boolean))
+			.join(',');
 
-		res.setHeader('Link', link);
+		res.setHeader('link', link);
 
 		let session;
 		try {
